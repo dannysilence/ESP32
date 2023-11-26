@@ -44,11 +44,11 @@
 
 static const char *TAG = "DB_ESP32";
 
-uint8_t DB_WIFI_MODE = 1; // 1=Wifi AP mode, 2=Wifi client mode
-uint8_t DEFAULT_SSID[32] = "DroneBridge ESP32";
-uint8_t DEFAULT_PWD[64] = "dronebridge";
-char DEFAULT_AP_IP[32] = "192.168.2.1";
-char CURRENT_CLIENT_IP[32] = "192.168.2.1";
+uint8_t DB_WIFI_MODE = 2; // 1=Wifi AP mode, 2=Wifi client mode
+uint8_t DEFAULT_SSID[32] = "mavesp";
+uint8_t DEFAULT_PWD[64] = "liliputinmegaloh";
+char DEFAULT_AP_IP[32] = "192.168.4.1";
+char CURRENT_CLIENT_IP[32] = "192.168.4.1";
 uint8_t DEFAULT_CHANNEL = 6;
 uint8_t SERIAL_PROTOCOL = 4;  // 1=MSP, 4=MAVLink/transparent
 # ifdef USE_ALT_UART_CONFIG
@@ -184,7 +184,7 @@ void init_wifi_apmode() {
 
     wifi_config_t wifi_config = {
             .ap = {
-                    .ssid = "DroneBridge_ESP32_Init",
+                    .ssid = "mavesp",
                     .ssid_len = 0,
                     .authmode = WIFI_AUTH_WPA_PSK,
                     .channel = DEFAULT_CHANNEL,
@@ -216,6 +216,18 @@ void init_wifi_apmode() {
     strncpy(CURRENT_CLIENT_IP, DEFAULT_AP_IP, sizeof(CURRENT_CLIENT_IP));
 }
 
+void safeStartCamStream() {
+  try {
+    int x = http_get("http://10.5.5.9/gp/gpControl/execute?p1=gpStream&a1=proto_v2&c1=restart");
+
+    if(x >= 200 && x <= 300) {
+      // TODO connect to udp://10.5.5.9:8554 and resend it to 10.5.5.255:8554 or other port
+      // so qgroundcontrol can discover morg-ts video frames from gopro 
+    }
+  }
+  catch() {}
+}
+
 /**
  * Initializes the ESP Wifi client mode where we can connect to a known access point
  */
@@ -241,8 +253,8 @@ void init_wifi_clientmode() {
 
     wifi_config_t wifi_config = {
             .sta = {
-                    .ssid = "DroneBridge_ESP32_Init",
-                    .password = "dronebridge"
+                    .ssid = "aircam",
+                    .password = "kickASS"
             },
     };
     xthal_memcpy(wifi_config.sta.ssid, DEFAULT_SSID, 32);
@@ -266,6 +278,8 @@ void init_wifi_clientmode() {
      * happened. */
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "Connected to ap SSID:%s password:%s", DEFAULT_SSID, DEFAULT_PWD);
+
+        safeStartCamStream();
     } else if (bits & WIFI_FAIL_BIT) {
         ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", DEFAULT_SSID, DEFAULT_PWD);
     } else {
