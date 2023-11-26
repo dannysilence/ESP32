@@ -223,7 +223,9 @@ void safeStartCamStream() {
 
     if(x >= 200 && x <= 300) {
       // TODO connect to udp://10.5.5.9:8554 and resend it to 10.5.5.255:8554 or other port
-      // so qgroundcontrol can discover morg-ts video frames from gopro 
+      // so qgroundcontrol can discover mpeg-ts video frames from gopro 
+      //
+      // thanks @KonradIT for his gpauto and goprowifihack repos which makes this such an easy way ...
     }
   }
   catch() {}
