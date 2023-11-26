@@ -37,6 +37,7 @@
 #include "esp_vfs_semihost.h"
 #include "esp_spiffs.h"
 #include "http_server.h"
+#include "http_client.h"
 #include "main.h"
 
 #define NVS_NAMESPACE "settings"
